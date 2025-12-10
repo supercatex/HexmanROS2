@@ -11,12 +11,18 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.parameter_descriptions import ParameterValue
 from launch.substitutions import Command
 from launch.substitutions import ThisLaunchFileDir
+from launch.substitutions import EnvironmentVariable
 
+### Hexman in .bashrc ###
+# export HEXMAN_TYPE="echo"
+# export HEXMAN_BASH_PATH=~/"sdk_"$HEXMAN_TYPE"_ws"/install/setup.bash
+# source $HEXMAN_BASH_PATH
+### Hexman - 1 ###
 
 def generate_launch_description():
 
-
-    urdf_pkg_path = FindPackageShare("xpkg_urdf_echo_plus")
+    robot_type = EnvironmentVariable('HEXMAN_TYPE', default_value='echo')
+    urdf_pkg_path = FindPackageShare(["xpkg_urdf_", robot_type])
     urdf_file_path = PathJoinSubstitution(
         [urdf_pkg_path, "urdf", "model.urdf"]
     )
@@ -49,7 +55,9 @@ def generate_launch_description():
         }]
     )
 
-    vehicle_ini_path = PathJoinSubstitution([FindPackageShare("xpkg_vehicle"), "ini", "device_id_list.ini"])
+    vehicle_ini_path = PathJoinSubstitution(
+        [FindPackageShare("xpkg_vehicle"), "ini", "device_id_list.ini"]
+    )
     xnode_vehicle = Node(
         name="xnode_vehicle",
         package="xpkg_vehicle",
@@ -94,10 +102,10 @@ def generate_launch_description():
     base_link_to_laser = Node(
         package = "tf2_ros", 
         executable = "static_transform_publisher",
-        arguments = ["0-0.043", "0", "0.2", "0", "0", "0", "base_link", "laser"]
+        # arguments = ["-0.043", "0", "0.2", "0", "0", "0", "base_link", "laser"]
+        arguments = ["-0.043", "0", "0.2", "3.1415", "0", "0", "base_link", "laser"]
     )
          
     return LaunchDescription([
         robot_state_node, joint_state_node, xnode_comm, xnode_vehicle, scan_node, base_link_to_laser
     ])
-
