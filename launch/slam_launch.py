@@ -13,7 +13,7 @@ import os
 
 ARGUMENTS = [
     DeclareLaunchArgument('use_sim_time', 
-        default_value='false',
+        default_value='true',
         choices=['true', 'false'], 
         description='Use sim time'),
     DeclareLaunchArgument('sync', 
@@ -74,17 +74,6 @@ def generate_launch_description():
              ],
              remappings=remappings,
              condition=IfCondition(sync)),
-
-        Node(package='slam_toolbox',
-             executable='async_slam_toolbox_node',
-             name='slam_toolbox',
-             output='screen',
-             parameters=[
-               slam_params,
-               {'use_sim_time': LaunchConfiguration('use_sim_time')}
-             ],
-             remappings=remappings,
-             condition=UnlessCondition(sync)),
 
         Node(
             package='rviz2',
